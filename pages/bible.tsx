@@ -1,4 +1,3 @@
-// pages/bible.tsx
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
@@ -29,24 +28,22 @@ const BiblePage = () => {
 
   // Fetch chapters for the selected book
   const fetchChapters = async (book: string) => {
-  setSelectedBook(book);
-  setLoading(true);
-  try {
-    const response = await fetch(`/api/Bible?passage=${book}.1`);
-    const data = await response.json();
-    
-    // Assuming data contains an array of chapters
-    // Convert chapter numbers to strings
-    const chapters = Array.from({ length: 5 }, (_, i) => (i + 1).toString()); // Example: ["1", "2", "3", "4", "5"]
-
-    setChapters(chapters); // Set chapters as strings
-  } catch (error) {
-    console.error('Error fetching chapters:', error);
-  } finally {
-    setLoading(false);
-  }
-};
-
+    setSelectedBook(book);
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/Bible?passage=${book}.1`);
+      const data = await response.json();
+      
+      // Assuming data contains an array of chapters
+      // Convert chapter numbers to strings
+      const chapters = Array.from({ length: 5 }, (_, i) => (i + 1).toString()); // Example: ["1", "2", "3", "4", "5"]
+      setChapters(chapters); // Set chapters as strings
+    } catch (error) {
+      console.error('Error fetching chapters:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-8">
@@ -56,33 +53,31 @@ const BiblePage = () => {
       </header>
 
       {/* List of Books */}
-      {loading ? (
-        <div>Loading books...</div>
-      ) : (
-        <div className="space-y-4">
+      {!selectedBook && loading ? (
+        <div className="text-white">Loading books...</div>
+      ) : !selectedBook ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-6">
           {books.map((book, index) => (
             <button
               key={index}
               onClick={() => fetchChapters(book)}
-              className="bg-white text-black py-2 px-6 rounded-lg shadow-md hover:bg-gray-200 transition duration-300 ease-in-out"
+              className="bg-white text-black py-3 px-6 rounded-lg shadow-lg hover:bg-gray-200 transition duration-300 ease-in-out text-xl"
             >
               {book}
             </button>
           ))}
         </div>
-      )}
-
-      {/* Display chapters once a book is selected */}
-      {selectedBook && (
-        <div className="mt-8">
-          <h2 className="text-2xl font-semibold text-white">{selectedBook}</h2>
-          <div className="space-y-4 mt-4">
+      ) : (
+        // If a book is selected, show chapters
+        <div className="mt-8 w-full max-w-2xl mx-auto">
+          <h2 className="text-2xl font-semibold text-white mb-4">{selectedBook}</h2>
+          <div className="space-y-4">
             {loading ? (
-              <div>Loading chapters...</div>
+              <div className="text-white">Loading chapters...</div>
             ) : (
               chapters.map((chapter) => (
                 <Link href={`/bible/${selectedBook}/${chapter}`} key={chapter}>
-                  <button className="block bg-white text-black py-2 px-6 rounded-lg shadow-md hover:bg-gray-200 transition duration-300 ease-in-out">
+                  <button className="block bg-white text-black py-3 px-6 rounded-lg shadow-lg hover:bg-gray-200 transition duration-300 ease-in-out text-lg w-full">
                     Chapter {chapter}
                   </button>
                 </Link>
@@ -93,8 +88,8 @@ const BiblePage = () => {
       )}
 
       {/* Footer with navigation links */}
-      <footer className="mt-12 text-sm opacity-75">
-        <Link href="/">Back to Home</Link>
+      <footer className="mt-12 text-sm opacity-75 text-center">
+        <Link href="/" className="text-white hover:text-gray-300">Back to Home</Link>
       </footer>
     </div>
   );
